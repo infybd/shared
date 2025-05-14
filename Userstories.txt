@@ -1,0 +1,104 @@
+1. As a User, I want to register with my name and my email so that I can receive confirmation emails
+
+from the system.
+
+2. As a System, I want to validate user inputs (like email format and required fields) so that only valid
+
+data is processed.
+
+3. As a User, I want to receive a welcome or confirmation email after successful registration so that I
+
+know my registration is successful.
+
+4. As a Developer, I want to capture and log all exceptions during registration and email notification
+
+processes so that I can debug issues effectively.
+
+5. As a System, I want to store exceptions in a .csv or .txt file with date and time so that errors can
+
+be analysed later.
+
+6. As a QA Analyst, I want to view exception logs in Power BI dashboards so that I can track which
+
+modules are failing most often.
+
+7. As a System, I want to handle smtp and network related exceptions gracefully so that the
+
+application doesn't crash during email sending.
+
+8. As a Project Manager, I want to use insights from the exception log to reduce recurring errors and
+
+improve application stability over time.
+
+9. As a User, I want to see a meaningful error message if registration fails so that I know what went
+
+wrong and try again.
+
+10. As a Developer, I want to classify exceptions by module and function so that I can identify
+
+patterns and take preventive measures.
+
+11. As a User, I want to be informed if my email is already registered so that I don't register twice.
+
+12. As a User, I want to be able to resend the confirmation email in case I didn't receive it.
+
+13. As a User, I want the registration form to preserve my input in case of validation errors so I don't
+
+have to retype everything.
+
+14. As a User, I want to be able to view and update my profile information after registration.
+
+15. As a User, I want the system to indicate which fields are mandatory to avoid incomple
+16. As a Developer, I want to be notified when repeated exceptions occur within a short time span
+
+so I can investigate potential systemic issues.
+
+17. As a Developer, I want to integrate a centralized logging framework for consistent exception
+
+handling.
+
+18. As a Developer, I want to test email delivery logic in a staging environment without triggering
+
+real emails.
+
+19. As a Developer, I want exceptions to be categorized by severity so critical issues can be
+
+prioritized.
+
+20. As a Developer, I want to have detailed stack traces in logs so that debugging is faster.
+
+21. As a System, I want to throttle email sending to avoid spamming or getting blacklisted.
+
+22. As a System, I want to mask sensitive data in logs to protect user privacy.
+
+23. As a System, I want to retry failed email delivery attempts a configurable number of times.
+
+24. As a System, I want to automatically archive old log files to maintain disk space.
+
+25. As a System, I want to support multiple languages in email templates for better user experience.
+
+26. As a QA Analyst, I want to simulate various user inputs to ensure validation rules are enforced.
+
+27. As a QA Analyst, I want to be alerted when a new type of exception appears in logs so I can flag
+
+regressions.
+
+28. As a QA Analyst, I want to validate that confirmation emails are correctly formatted and sent in
+
+all test scenarios.
+
+29. As a Project Manager, I want to review exception trends over time to evaluate the effectiveness
+
+of development practices.
+
+30. As a Project Manager, I want to track metrics like average registration success rate and email
+
+delivery success.
+
+31. As a Project Manager, I want to ensure compliance with data protection regulations in logging
+
+and email processes.
+
+32. As an Admin, I want to manually trigger email delivery in case of failure due to temporary issues.
+
+33. As an Admin, I want to search and filter exception logs by user email or session ID.
