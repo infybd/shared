@@ -1,6 +1,7 @@
 import random
 from datetime import datetime, timedelta
 import json
+import csv
 
 # Exception descriptions dictionary
 exception_descriptions = {
@@ -33,7 +34,7 @@ exception_descriptions = {
     "UnknownException": "An unknown error has occurred."
 }
 
-# Template of how exceptions are mapped in services and methods
+# Exception mapping template
 exceptions_template = {
     "UserService": {
         "AuthService": {
@@ -67,7 +68,7 @@ exceptions_template = {
     }
 }
 
-# Add unmapped exceptions to a generic service
+# Add unmapped exceptions under Miscellaneous -> UnmappedService
 used_exceptions = set()
 for app in exceptions_template.values():
     for service in app.values():
@@ -80,10 +81,10 @@ if unused_exceptions:
     exceptions_template["Miscellaneous"].setdefault("UnmappedService", {})
     exceptions_template["Miscellaneous"]["UnmappedService"]["handleUnknown"] = list(unused_exceptions)
 
-# Create a pool of users
+# Sample user pool
 user_pool = [f"user{str(i).zfill(4)}" for i in range(1, 501)]
 
-# Log generator
+# Generate logs
 def generate_logs(num_records=5000):
     logs = []
     now = datetime.now()
@@ -100,7 +101,7 @@ def generate_logs(num_records=5000):
             exception = random.choice(method_or_exceptions)
 
         description = exception_descriptions.get(exception, "No description available.")
-        timestamp = now - timedelta(seconds=random.randint(0, 604800))  # past 7 days
+        timestamp = now - timedelta(seconds=random.randint(0, 604800))  # last 7 days
         user = random.choice(user_pool)
 
         log_entry = {
@@ -115,14 +116,27 @@ def generate_logs(num_records=5000):
         logs.append(log_entry)
     return logs
 
-# Generate and optionally save logs
+# Save logs to JSON
+def save_logs_json(logs, filename="synthetic_logs.json"):
+    with open(filename, "w") as f:
+        json.dump(logs, f, indent=2)
+
+# Save logs to CSV
+def save_logs_csv(logs, filename="synthetic_logs.csv"):
+    if logs:
+        keys = logs[0].keys()
+        with open(filename, "w", newline='') as f:
+            writer = csv.DictWriter(f, fieldnames=keys)
+            writer.writeheader()
+            writer.writerows(logs)
+
+# Main script
 if __name__ == "__main__":
     logs = generate_logs(5000)
-    
-    # Save to a file (optional)
-    with open("synthetic_logs.json", "w") as f:
-        json.dump(logs, f, indent=2)
-    
-    # Print 3 sample logs
+    save_logs_json(logs)
+    save_logs_csv(logs)
+
+    # Print sample
+    print("Sample log entries:")
     for log in logs[:3]:
         print(json.dumps(log, indent=2))
