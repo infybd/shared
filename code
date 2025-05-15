@@ -1,4 +1,383 @@
-# Generate fake logs
+import json
+import csv
+import random
+from datetime import datetime, timedelta
+import os
+
+# --- Your original exceptions_template and exception_descriptions go here unchanged ---
+output_dir = r"C:/Users/sai62.TRN/Downloads"
+json_path = os.path.join(output_dir, "enhanced_ecommerce_exception_logs.json")
+csv_path = os.path.join(output_dir, "enhanced_ecommerce_exception_logs.csv")
+
+exceptions_template = {
+    'User Registration & Authentication': {
+        'UserValidator': {
+            'validateCredentials': [
+                'UsernameExistsError', 'EmailExistsError', 'InvalidEmailFormatError', 
+                'PasswordComplexityFailureError', 'AccountNotVerifiedError'
+            ],
+            'validateLogin': [
+                'InvalidLoginCredentialsError', 'AccountLockedError', 'SessionExpirationError'
+            ],
+            'validateProfile': [
+                'ProfileUpdateError', 'AvatarUploadFailureError', 'AddressVerificationError', 
+                'AccountDeletionError'
+            ]
+        },
+        'AuthenticationService': {
+            'processLogin': [
+                'UserNotFoundError', 'InvalidCredentialsError', 'AccountLockedError',
+                'SessionExpirationError'
+            ],
+            'processLogout': [
+                'SessionNotFoundError', 'SessionExpiredError'
+            ],
+            'processSocialLogin': [
+                'SocialLoginFailureError', 'AccountLinkingError', 'OAuthFailureError'
+            ]
+        }
+    },
+    'Product Catalog & Inventory': {
+        'ProductService': {
+            'getProduct': [
+                'ProductNotFoundError', 'ProductCategoryNotFoundError', 'InvalidProductDataError'
+            ],
+            'updateInventory': [
+                'InsufficientStockError', 'InventoryUpdateFailureError', 'PriceDiscrepancyError'
+            ]
+        },
+        'SearchService': {
+            'searchProducts': [
+                'SearchEngineError', 'InvalidFilterParametersError', 'SearchTimeoutError',
+                'ExcessiveResultsError'
+            ],
+            'filterProducts': [
+                'InvalidFilterParametersError', 'NoResultsFoundError'
+            ]
+        }
+    },
+    'Shopping Cart & Wishlist': {
+        'CartService': {
+            'addToCart': [
+                'CartItemNotFoundError', 'MaximumQuantityExceededError', 'CartSessionExpiredError',
+                'ItemNoLongerAvailableError'
+            ],
+            'updateCart': [
+                'CartItemNotFoundError', 'InsufficientStockError', 'CartUpdateFailureError'
+            ],
+            'checkoutCart': [
+                'EmptyCartError', 'ProductUnavailableError', 'CartValidationError'
+            ]
+        },
+        'WishlistService': {
+            'addToWishlist': [
+                'WishlistSyncError', 'ItemUnavailableForWishlistError', 'WishlistLimitExceededError'
+            ],
+            'moveToCart': [
+                'WishlistItemNotFoundError', 'CartAdditionFailureError'
+            ]
+        }
+    },
+    'Payment Processing': {
+        'PaymentGateway': {
+            'processPayment': [
+                'PaymentGatewayError', 'PaymentDeclinedError', 'InvalidCardDetailsError',
+                'PaymentTimeoutError', 'InsufficientFundsError', 'CurrencyConversionError',
+                'PaymentGatewayTimeoutError'
+            ],
+            'validatePayment': [
+                'CardValidationError', 'PaymentValidationError', 'FraudDetectionError'
+            ],
+            'processRefund': [
+                'RefundProcessingError', 'PartialRefundError', 'RefundLimitExceededError'
+            ]
+        }
+    },
+    'Order Processing': {
+        'OrderService': {
+            'createOrder': [
+                'OrderCreationFailureError', 'ShippingCalculationError', 'AddressValidationError'
+            ],
+            'updateOrder': [
+                'OrderStatusUpdateFailureError', 'OrderNotFoundError', 'InvalidOrderStatusError'
+            ],
+            'processRefund': [
+                'RefundProcessingError', 'OrderRefundFailureError'
+            ]
+        },
+        'ShippingService': {
+            'calculateShipping': [
+                'ShippingCalculationError', 'ShippingProviderError', 'ShippingLocationUnavailableError'
+            ],
+            'trackShipment': [
+                'ShipmentTrackingError', 'ShipmentNotFoundError', 'ShippingProviderError'
+            ]
+        },
+        'TaxService': {
+            'calculateTax': [
+                'TaxCalculationError', 'TaxRateNotFoundError', 'TaxJurisdictionError'
+            ]
+        }
+    },
+    'Promotions & Discounts': {
+        'PromotionService': {
+            'applyPromotion': [
+                'InvalidCouponCodeError', 'ExpiredPromotionError', 'DiscountCalculationError',
+                'CouponUsageLimitExceededError', 'IncompatiblePromotionsError'
+            ],
+            'validatePromotion': [
+                'PromotionValidationError', 'PromotionNotApplicableError', 'MinimumPurchaseRequirementError'
+            ]
+        }
+    },
+    'Reviews & Ratings': {
+        'ReviewService': {
+            'submitReview': [
+                'ReviewSubmissionError', 'DuplicateReviewError', 'ReviewModerationError'
+            ],
+            'moderateReview': [
+                'ReviewContentViolationError', 'ReviewProcessingError' 
+            ]
+        }
+    },
+    'Notifications & Communications': {
+        'NotificationService': {
+            'sendEmail': [
+                'EmailSendingFailureError', 'InvalidEmailAddressError', 'EmailTemplateError'
+            ],
+            'sendSMS': [
+                'SMSDeliveryFailureError', 'InvalidPhoneNumberError', 'SMSQuotaExceededError'
+            ],
+            'sendPushNotification': [
+                'PushNotificationErrorError', 'DeviceRegistrationError', 'NotificationDeliveryError'
+            ]
+        },
+        'CommunicationService': {
+            'prepareTemplate': [
+                'CommunicationTemplateError', 'TemplateRenderingError', 'TemplateVariableError'
+            ]
+        }
+    },
+    'System & Security': {
+        'DatabaseService': {
+            'executeQuery': [
+                'DatabaseConnectionError', 'DatabaseQueryTimeoutError', 'DatabaseTransactionError'
+            ]
+        },
+        'APIService': {
+            'processRequest': [
+                'ThirdPartyAPIFailureError', 'RateLimitExceededError', 'APIAuthenticationFailureError'
+            ]
+        },
+        'SecurityService': {
+            'validateRequest': [
+                'CSRFTokenValidationError', 'IPBlockingError', 'FraudDetectionAlertError'
+            ],
+            'monitorSystem': [
+                'ResourceLimitExceededError', 'CacheInvalidationError', 'BackgroundJobFailureError'
+            ]
+        },
+        'ReportingService': {
+            'generateReport': [
+                'ReportGenerationError', 'DataExportTimeoutError', 'InvalidDateRangeError',
+                'AnalyticsIntegrationError'
+            ]
+        }
+    }
+}
+
+exception_descriptions = {
+    # User Registration & Authentication
+    'UsernameExistsError': 'The provided username is already taken by another user.',
+    'EmailExistsError': 'An account with this email address already exists.',
+    'InvalidEmailFormatError': 'The email address format is invalid.',
+    'PasswordComplexityFailureError': 'Password does not meet complexity requirements.',
+    'AccountNotVerifiedError': 'The account has not been verified yet.',
+    'InvalidLoginCredentialsError': 'The provided login credentials are incorrect.',
+    'AccountLockedError': 'The account has been locked due to multiple failed login attempts.',
+    'SessionExpirationError': 'The user session has expired.',
+    'ProfileUpdateError': 'Failed to update user profile information.',
+    'AvatarUploadFailureError': 'Failed to upload user profile image.',
+    'AddressVerificationError': 'Could not verify the provided address.',
+    'AccountDeletionError': 'Failed to delete user account.',
+    'UserNotFoundError': 'The requested user account could not be found.',
+    'InvalidCredentialsError': 'The provided credentials are invalid.',
+    'SessionNotFoundError': 'No active session found for this user.',
+    'SessionExpiredError': 'The session has expired.',
+    'SocialLoginFailureError': 'Failed to authenticate with social media provider.',
+    'AccountLinkingError': 'Failed to link social account with existing user.',
+    'OAuthFailureError': 'OAuth authentication process failed.',
+    
+    # Product Catalog & Inventory
+    'ProductNotFoundError': 'The requested product could not be found.',
+    'ProductCategoryNotFoundError': 'The specified product category does not exist.',
+    'InvalidProductDataError': 'The product data is invalid or incomplete.',
+    'InsufficientStockError': 'There is not enough stock available for this product.',
+    'InventoryUpdateFailureError': 'Failed to update the inventory records.',
+    'PriceDiscrepancyError': 'There is a discrepancy between displayed and actual price.',
+    'SearchEngineError': 'The search engine encountered an error.',
+    'InvalidFilterParametersError': 'The provided filter parameters are invalid.',
+    'SearchTimeoutError': 'The search operation timed out.',
+    'ExcessiveResultsError': 'The search returned too many results to process.',
+    'NoResultsFoundError': 'No results found for the specified search criteria.',
+    
+    # Shopping Cart & Wishlist
+    'CartItemNotFoundError': 'The specified item was not found in the cart.',
+    'MaximumQuantityExceededError': 'The maximum allowed quantity for this item has been exceeded.',
+    'CartSessionExpiredError': 'The shopping cart session has expired.',
+    'ItemNoLongerAvailableError': 'The item is no longer available for purchase.',
+    'CartUpdateFailureError': 'Failed to update the shopping cart.',
+    'EmptyCartError': 'The shopping cart is empty.',
+    'ProductUnavailableError': 'One or more products in the cart are no longer available.',
+    'CartValidationError': 'Failed to validate the shopping cart contents.',
+    'WishlistSyncError': 'Failed to synchronize wishlist across devices.',
+    'ItemUnavailableForWishlistError': 'The item cannot be added to the wishlist.',
+    'WishlistLimitExceededError': 'The wishlist item limit has been reached.',
+    'WishlistItemNotFoundError': 'The specified item was not found in the wishlist.',
+    'CartAdditionFailureError': 'Failed to add wishlist item to the cart.',
+    
+    # Payment Processing
+    'PaymentGatewayError': 'The payment gateway encountered an error.',
+    'PaymentDeclinedError': 'The payment was declined by the payment processor.',
+    'InvalidCardDetailsError': 'The provided card details are invalid.',
+    'PaymentTimeoutError': 'The payment process timed out.',
+    'InsufficientFundsError': 'There are insufficient funds to complete the transaction.',
+    'CurrencyConversionError': 'Failed to convert currency for international transaction.',
+    'PaymentGatewayTimeoutError': 'The payment gateway timed out during processing.',
+    'CardValidationError': 'Failed to validate the provided card details.',
+    'PaymentValidationError': 'Failed to validate the payment information.',
+    'FraudDetectionError': 'The payment was flagged by fraud detection system.',
+    'RefundProcessingError': 'Failed to process the refund request.',
+    'PartialRefundError': 'Only a partial refund could be processed.',
+    'RefundLimitExceededError': 'The refund limit for this order has been exceeded.',
+    
+    # Order Processing
+    'OrderCreationFailureError': 'Failed to create a new order.',
+    'ShippingCalculationError': 'Failed to calculate shipping costs.',
+    'AddressValidationError': 'The provided shipping address is invalid.',
+    'OrderStatusUpdateFailureError': 'Failed to update the order status.',
+    'OrderNotFoundError': 'The specified order could not be found.',
+    'InvalidOrderStatusError': 'The specified order status is invalid.',
+    'OrderRefundFailureError': 'Failed to process refund for the order.',
+    'ShippingProviderError': 'The shipping provider encountered an error.',
+    'ShippingLocationUnavailableError': 'Shipping is not available to the specified location.',
+    'ShipmentTrackingError': 'Failed to retrieve shipment tracking information.',
+    'ShipmentNotFoundError': 'The specified shipment could not be found.',
+    'TaxCalculationError': 'Failed to calculate taxes for the order.',
+    'TaxRateNotFoundError': 'Tax rate not found for the specified location.',
+    'TaxJurisdictionError': 'Failed to determine tax jurisdiction for the address.',
+    
+    # Promotions & Discounts
+    'InvalidCouponCodeError': 'The provided coupon code is invalid.',
+    'ExpiredPromotionError': 'The promotion has expired.',
+    'DiscountCalculationError': 'Failed to calculate the discount amount.',
+    'CouponUsageLimitExceededError': 'The coupon usage limit has been exceeded.',
+    'IncompatiblePromotionsError': 'The selected promotions cannot be combined.',
+    'PromotionValidationError': 'Failed to validate the promotion.',
+    'PromotionNotApplicableError': 'The promotion is not applicable to the current order.',
+    'MinimumPurchaseRequirementError': 'The order does not meet minimum purchase requirement.',
+    
+    # Reviews & Ratings
+    'ReviewSubmissionError': 'Failed to submit the product review.',
+    'DuplicateReviewError': 'A review has already been submitted for this product.',
+    'ReviewModerationError': 'The review was flagged during moderation.',
+    'ReviewContentViolationError': 'The review content violates community guidelines.',
+    'ReviewProcessingError': 'Failed to process the review submission.',
+    
+    # Notifications & Communications
+    'EmailSendingFailureError': 'Failed to send email notification.',
+    'InvalidEmailAddressError': 'The email address is invalid.',
+    'EmailTemplateError': 'Failed to render email template.',
+    'SMSDeliveryFailureError': 'Failed to deliver SMS notification.',
+    'InvalidPhoneNumberError': 'The phone number is invalid.',
+    'SMSQuotaExceededError': 'The SMS quota has been exceeded.',
+    'PushNotificationErrorError': 'Failed to send push notification.',
+    'DeviceRegistrationError': 'The device is not registered for push notifications.',
+    'NotificationDeliveryError': 'Failed to deliver notification.',
+    'CommunicationTemplateError': 'Failed to process communication template.',
+    'TemplateRenderingError': 'Failed to render template.',
+    'TemplateVariableError': 'Missing or invalid template variables.',
+    
+    # System & Security
+    'DatabaseConnectionError': 'Failed to connect to the database.',
+    'DatabaseQueryTimeoutError': 'Database query timed out.',
+    'DatabaseTransactionError': 'Database transaction failed.',
+    'ThirdPartyAPIFailureError': 'Third-party API request failed.',
+    'RateLimitExceededError': 'API rate limit has been exceeded.',
+    'APIAuthenticationFailureError': 'Failed to authenticate with API.',
+    'CSRFTokenValidationError': 'Failed to validate CSRF token.',
+    'IPBlockingError': 'Failed to block suspicious IP address.',
+    'FraudDetectionAlertError': 'Fraud detection system flagged suspicious activity.',
+    'ResourceLimitExceededError': 'System resource limit has been exceeded.',
+    'CacheInvalidationError': 'Failed to invalidate cache.',
+    'BackgroundJobFailureError': 'Background job failed to complete.',
+    'ReportGenerationError': 'Failed to generate report.',
+    'DataExportTimeoutError': 'Data export operation timed out.',
+    'InvalidDateRangeError': 'The specified date range is invalid.',
+    'AnalyticsIntegrationError': 'Failed to integrate with analytics service.'
+}
+
+
+# --- Additional exceptions to merge into the existing template ---
+additional_exceptions = {
+    'User Registration & Authentication': {
+        'UserValidator': {
+            'registerUser': [
+                'CaptchaVerificationFailedError'
+            ],
+            'validateLogin': [
+                'TooManyLoginAttemptsError'
+            ]
+        },
+        'SearchService': {
+            'autoSuggest': [
+                'AutoSuggestFailureError'
+            ]
+        },
+        'CartService': {
+            'saveCart': [
+                'CartPersistenceError'
+            ]
+        },
+        'CheckoutService': {
+            'placeOrder': [
+                'OrderDuplicateSubmissionError'
+            ]
+        },
+        'NotificationService': {
+            'sendEmail': [
+                'EmailSpamDetectedError'
+            ]
+        },
+        'PaymentGateway': {
+            'verifyTransaction': [
+                'PaymentReversalError'
+            ]
+        }
+    }
+}
+
+# Function to merge additional exceptions into your original template
+def merge_exceptions(base, additions):
+    for app, services in additions.items():
+        if app not in base:
+            base[app] = {}
+        for service, methods in services.items():
+            if service not in base[app]:
+                base[app][service] = {}
+            for method, exc_list in methods.items():
+                if method in base[app][service]:
+                    base[app][service][method].extend(exc_list)
+                else:
+                    base[app][service][method] = exc_list
+
+# Merge the additional exceptions
+merge_exceptions(exceptions_template, additional_exceptions)
+
+# --- User list for the user column ---
+users = [f"user{str(i).zfill(3)}" for i in range(1, 201)]  # user001, user002, ...
+
+# --- Your original generate_logs function with only user field added ---
 def generate_logs(template, descriptions, num_entries=100):
     logs = []
     for _ in range(num_entries):
