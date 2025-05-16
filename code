@@ -1,5 +1,6 @@
 import json
 import random
+import csv
 from datetime import datetime, timedelta
 
 # --- Exception Template ---
@@ -28,6 +29,9 @@ exceptions_template = {
             ],
             'processSocialLogin': [
                 'SocialLoginFailureError', 'AccountLinkingError', 'OAuthFailureError'
+            ],
+            'handle2FA': [
+                'TwoFactorAuthFailureError', 'InvalidVerificationCodeError', 'TwoFactorTimeoutError'
             ]
         }
     },
@@ -38,6 +42,9 @@ exceptions_template = {
             ],
             'updateInventory': [
                 'InsufficientStockError', 'InventoryUpdateFailureError', 'PriceDiscrepancyError'
+            ],
+            'reserveStock': [
+                'StockReservationFailureError', 'ReservationTimeoutError', 'ReservationExpirationError'
             ]
         },
         'SearchService': {
@@ -47,6 +54,9 @@ exceptions_template = {
             ],
             'filterProducts': [
                 'InvalidFilterParametersError', 'NoResultsFoundError'
+            ],
+            'analyzeSearchTrends': [
+                'SearchAnalyticsError', 'DataProcessingOverloadError'
             ]
         }
     },
@@ -61,6 +71,9 @@ exceptions_template = {
             ],
             'checkoutCart': [
                 'EmptyCartError', 'ProductUnavailableError', 'CartValidationError'
+            ],
+            'mergeCart': [
+                'CartMergeConflictError', 'CartDataCorruptionError'
             ]
         },
         'WishlistService': {
@@ -69,6 +82,9 @@ exceptions_template = {
             ],
             'moveToCart': [
                 'WishlistItemNotFoundError', 'CartAdditionFailureError'
+            ],
+            'shareWishlist': [
+                'WishlistSharingError', 'InvalidSharingPermissionsError'
             ]
         }
     },
@@ -84,6 +100,9 @@ exceptions_template = {
             ],
             'processRefund': [
                 'RefundProcessingError', 'PartialRefundError', 'RefundLimitExceededError'
+            ],
+            'handleCryptoCurrency': [
+                'CryptoPaymentVerificationError', 'BlockchainConnectionError', 'WalletAddressInvalidError'
             ]
         }
     },
@@ -97,6 +116,9 @@ exceptions_template = {
             ],
             'processRefund': [
                 'RefundProcessingError', 'OrderRefundFailureError'
+            ],
+            'splitOrder': [
+                'OrderSplitFailureError', 'MultiWarehouseCoordinationError'
             ]
         },
         'ShippingService': {
@@ -105,11 +127,17 @@ exceptions_template = {
             ],
             'trackShipment': [
                 'ShipmentTrackingError', 'ShipmentNotFoundError', 'ShippingProviderError'
+            ],
+            'updateDeliveryOptions': [
+                'DeliveryOptionUpdateError', 'LastMileDeliveryFailureError'
             ]
         },
         'TaxService': {
             'calculateTax': [
                 'TaxCalculationError', 'TaxRateNotFoundError', 'TaxJurisdictionError'
+            ],
+            'validateTaxExemption': [
+                'TaxExemptionValidationError', 'InvalidTaxDocumentError'
             ]
         }
     },
@@ -121,6 +149,9 @@ exceptions_template = {
             ],
             'validatePromotion': [
                 'PromotionValidationError', 'PromotionNotApplicableError', 'MinimumPurchaseRequirementError'
+            ],
+            'generatePromotionCode': [
+                'PromotionCodeGenerationError', 'DuplicatePromotionCodeError'
             ]
         }
     },
@@ -131,6 +162,9 @@ exceptions_template = {
             ],
             'moderateReview': [
                 'ReviewContentViolationError', 'ReviewProcessingError' 
+            ],
+            'calculateProductRating': [
+                'RatingCalculationError', 'ReviewDataInconsistencyError'
             ]
         }
     },
@@ -144,11 +178,17 @@ exceptions_template = {
             ],
             'sendPushNotification': [
                 'PushNotificationErrorError', 'DeviceRegistrationError', 'NotificationDeliveryError'
+            ],
+            'scheduleNotification': [
+                'NotificationSchedulingError', 'NotificationQueueOverflowError'
             ]
         },
         'CommunicationService': {
             'prepareTemplate': [
                 'CommunicationTemplateError', 'TemplateRenderingError', 'TemplateVariableError'
+            ],
+            'processUnsubscribe': [
+                'UnsubscribeProcessingError', 'CommunicationPreferenceUpdateError'
             ]
         }
     },
@@ -156,11 +196,17 @@ exceptions_template = {
         'DatabaseService': {
             'executeQuery': [
                 'DatabaseConnectionError', 'DatabaseQueryTimeoutError', 'DatabaseTransactionError'
+            ],
+            'performBackup': [
+                'DatabaseBackupFailureError', 'BackupStorageFullError'
             ]
         },
         'APIService': {
             'processRequest': [
                 'ThirdPartyAPIFailureError', 'RateLimitExceededError', 'APIAuthenticationFailureError'
+            ],
+            'validateAPIKey': [
+                'InvalidAPIKeyError', 'APIKeyExpiredError', 'APIPermissionDeniedError'
             ]
         },
         'SecurityService': {
@@ -169,12 +215,39 @@ exceptions_template = {
             ],
             'monitorSystem': [
                 'ResourceLimitExceededError', 'CacheInvalidationError', 'BackgroundJobFailureError'
+            ],
+            'detectDDoS': [
+                'DDoSAttackDetectedError', 'TrafficAnomalyError'
             ]
         },
         'ReportingService': {
             'generateReport': [
                 'ReportGenerationError', 'DataExportTimeoutError', 'InvalidDateRangeError',
                 'AnalyticsIntegrationError'
+            ],
+            'scheduleDailyReport': [
+                'ReportSchedulingError', 'HistoricalDataAccessError'
+            ]
+        }
+    },
+    'Customer Service': {
+        'TicketService': {
+            'createTicket': [
+                'TicketCreationError', 'TicketCategoryNotFoundError', 'AttachmentUploadFailureError'
+            ],
+            'assignTicket': [
+                'AgentNotAvailableError', 'TicketAssignmentFailureError', 'WorkloadBalancingError'
+            ],
+            'escalateTicket': [
+                'EscalationFailureError', 'NoAvailableManagerError'
+            ]
+        },
+        'LiveChatService': {
+            'initializeChat': [
+                'ChatInitializationFailureError', 'NoAgentsAvailableError', 'ChatQueueOverflowError'
+            ],
+            'transferChat': [
+                'ChatTransferFailureError', 'ChatDisconnectionError'
             ]
         }
     }
@@ -202,6 +275,9 @@ exception_descriptions = {
     'SocialLoginFailureError': 'Failed to authenticate with social media provider.',
     'AccountLinkingError': 'Failed to link social account with existing user.',
     'OAuthFailureError': 'OAuth authentication process failed.',
+    'TwoFactorAuthFailureError': 'Two-factor authentication verification failed.',
+    'InvalidVerificationCodeError': 'The provided verification code is invalid or expired.',
+    'TwoFactorTimeoutError': 'The two-factor authentication process timed out.',
     
     # Product Catalog & Inventory
     'ProductNotFoundError': 'The requested product could not be found.',
@@ -215,6 +291,11 @@ exception_descriptions = {
     'SearchTimeoutError': 'The search operation timed out.',
     'ExcessiveResultsError': 'The search returned too many results to process.',
     'NoResultsFoundError': 'No results found for the specified search criteria.',
+    'StockReservationFailureError': 'Failed to reserve stock for the current order.',
+    'ReservationTimeoutError': 'The stock reservation timed out.',
+    'ReservationExpirationError': 'The stock reservation has expired.',
+    'SearchAnalyticsError': 'Failed to analyze search trends and patterns.',
+    'DataProcessingOverloadError': 'Search analytics data processing overload encountered.',
     
     # Shopping Cart & Wishlist
     'CartItemNotFoundError': 'The specified item was not found in the cart.',
@@ -230,6 +311,10 @@ exception_descriptions = {
     'WishlistLimitExceededError': 'The wishlist item limit has been reached.',
     'WishlistItemNotFoundError': 'The specified item was not found in the wishlist.',
     'CartAdditionFailureError': 'Failed to add wishlist item to the cart.',
+    'CartMergeConflictError': 'Conflict occurred while merging guest cart with user cart.',
+    'CartDataCorruptionError': 'Shopping cart data corruption detected.',
+    'WishlistSharingError': 'Failed to share wishlist with specified recipients.',
+    'InvalidSharingPermissionsError': 'Invalid permissions for wishlist sharing.',
     
     # Payment Processing
     'PaymentGatewayError': 'The payment gateway encountered an error.',
@@ -245,6 +330,9 @@ exception_descriptions = {
     'RefundProcessingError': 'Failed to process the refund request.',
     'PartialRefundError': 'Only a partial refund could be processed.',
     'RefundLimitExceededError': 'The refund limit for this order has been exceeded.',
+    'CryptoPaymentVerificationError': 'Failed to verify cryptocurrency payment transaction.',
+    'BlockchainConnectionError': 'Failed to connect to blockchain network for payment verification.',
+    'WalletAddressInvalidError': 'The provided cryptocurrency wallet address is invalid.',
     
     # Order Processing
     'OrderCreationFailureError': 'Failed to create a new order.',
@@ -261,6 +349,12 @@ exception_descriptions = {
     'TaxCalculationError': 'Failed to calculate taxes for the order.',
     'TaxRateNotFoundError': 'Tax rate not found for the specified location.',
     'TaxJurisdictionError': 'Failed to determine tax jurisdiction for the address.',
+    'OrderSplitFailureError': 'Failed to split order into multiple shipments.',
+    'MultiWarehouseCoordinationError': 'Failed to coordinate fulfillment across multiple warehouses.',
+    'DeliveryOptionUpdateError': 'Failed to update delivery options for the order.',
+    'LastMileDeliveryFailureError': 'Last-mile delivery service encountered an error.',
+    'TaxExemptionValidationError': 'Failed to validate tax exemption certificate.',
+    'InvalidTaxDocumentError': 'The provided tax document is invalid or expired.',
     
     # Promotions & Discounts
     'InvalidCouponCodeError': 'The provided coupon code is invalid.',
@@ -271,6 +365,8 @@ exception_descriptions = {
     'PromotionValidationError': 'Failed to validate the promotion.',
     'PromotionNotApplicableError': 'The promotion is not applicable to the current order.',
     'MinimumPurchaseRequirementError': 'The order does not meet minimum purchase requirement.',
+    'PromotionCodeGenerationError': 'Failed to generate unique promotion code.',
+    'DuplicatePromotionCodeError': 'The generated promotion code already exists.',
     
     # Reviews & Ratings
     'ReviewSubmissionError': 'Failed to submit the product review.',
@@ -278,6 +374,8 @@ exception_descriptions = {
     'ReviewModerationError': 'The review was flagged during moderation.',
     'ReviewContentViolationError': 'The review content violates community guidelines.',
     'ReviewProcessingError': 'Failed to process the review submission.',
+    'RatingCalculationError': 'Failed to calculate product rating from reviews.',
+    'ReviewDataInconsistencyError': 'Inconsistency detected in review data for the product.',
     
     # Notifications & Communications
     'EmailSendingFailureError': 'Failed to send email notification.',
@@ -292,6 +390,10 @@ exception_descriptions = {
     'CommunicationTemplateError': 'Failed to process communication template.',
     'TemplateRenderingError': 'Failed to render template.',
     'TemplateVariableError': 'Missing or invalid template variables.',
+    'NotificationSchedulingError': 'Failed to schedule future notification.',
+    'NotificationQueueOverflowError': 'Notification queue capacity exceeded.',
+    'UnsubscribeProcessingError': 'Failed to process unsubscribe request.',
+    'CommunicationPreferenceUpdateError': 'Failed to update communication preferences.',
     
     # System & Security
     'DatabaseConnectionError': 'Failed to connect to the database.',
@@ -309,12 +411,39 @@ exception_descriptions = {
     'ReportGenerationError': 'Failed to generate report.',
     'DataExportTimeoutError': 'Data export operation timed out.',
     'InvalidDateRangeError': 'The specified date range is invalid.',
-    'AnalyticsIntegrationError': 'Failed to integrate with analytics service.'
+    'AnalyticsIntegrationError': 'Failed to integrate with analytics service.',
+    'DatabaseBackupFailureError': 'Database backup process failed.',
+    'BackupStorageFullError': 'Backup storage space is full.',
+    'InvalidAPIKeyError': 'The provided API key is invalid.',
+    'APIKeyExpiredError': 'The API key has expired.',
+    'APIPermissionDeniedError': 'The API key does not have required permissions.',
+    'DDoSAttackDetectedError': 'Potential DDoS attack detected.',
+    'TrafficAnomalyError': 'Unusual traffic pattern detected.',
+    'ReportSchedulingError': 'Failed to schedule automated report generation.',
+    'HistoricalDataAccessError': 'Failed to access historical data for reporting.',
+    
+    # Customer Service
+    'TicketCreationError': 'Failed to create customer support ticket.',
+    'TicketCategoryNotFoundError': 'The specified ticket category does not exist.',
+    'AttachmentUploadFailureError': 'Failed to upload attachment to support ticket.',
+    'AgentNotAvailableError': 'No customer service agents are available.',
+    'TicketAssignmentFailureError': 'Failed to assign ticket to customer service agent.',
+    'WorkloadBalancingError': 'Failed to balance workload among customer service agents.',
+    'EscalationFailureError': 'Failed to escalate customer support ticket.',
+    'NoAvailableManagerError': 'No managers are available for ticket escalation.',
+    'ChatInitializationFailureError': 'Failed to initialize live chat session.',
+    'NoAgentsAvailableError': 'No chat agents are available at the moment.',
+    'ChatQueueOverflowError': 'Chat queue capacity exceeded.',
+    'ChatTransferFailureError': 'Failed to transfer chat to another agent.',
+    'ChatDisconnectionError': 'Chat session was unexpectedly disconnected.'
 }
 
 # --- Log Generator ---
 def generate_logs(num_records=5000):
     logs = []
+    # Generate some realistic user IDs
+    user_ids = [f'user_{str(random.randint(1000, 9999))}' for _ in range(300)]
+    
     for _ in range(num_records):
         app = random.choice(list(exceptions_template.keys()))
         service = random.choice(list(exceptions_template[app].keys()))
@@ -331,18 +460,36 @@ def generate_logs(num_records=5000):
         exc = random.choice(exception_list)
         description = exception_descriptions.get(exc, 'No description available.')
         fake_time = datetime.now() - timedelta(minutes=random.randint(0, 100000))
+        
+        # Add a user ID to the log entry - sometimes null for system-level errors
+        user_id = None
+        if random.random() > 0.2 or 'User' in app or 'Cart' in service or 'Order' in service:
+            user_id = random.choice(user_ids)
+        
         logs.append({
             'application_component': app,
             'service': service,
             'method_name': method,
             'exception': exc,
             'description': description,
-            'date_time': fake_time.strftime('%Y-%m-%d %H:%M:%S')
+            'date_time': fake_time.strftime('%Y-%m-%d %H:%M:%S'),
+            'user_id': user_id
         })
     return logs
 
+# Generate the logs
+exception_logs = generate_logs()
+
 # --- Write to JSON ---
 with open('ecommerce_exception_logs.json', 'w') as f:
-    json.dump(generate_logs(), f, indent=4)
+    json.dump(exception_logs, f, indent=4)
 
-print("✅ 5000 fake e-commerce exception records saved to 'ecommerce_exception_logs.json'.")
+# --- Write to CSV ---
+with open('ecommerce_exception_logs.csv', 'w', newline='') as f:
+    fieldnames = ['application_component', 'service', 'method_name', 'exception', 'description', 'date_time', 'user_id']
+    writer = csv.DictWriter(f, fieldnames=fieldnames)
+    writer.writeheader()
+    for log in exception_logs:
+        writer.writerow(log)
+
+print("✅ 5000 fake e-commerce exception records saved to 'ecommerce_exception_logs.json' and 'ecommerce_exception_logs.csv'.")
