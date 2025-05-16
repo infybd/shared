@@ -1,14 +1,8 @@
 import json
-import csv
 import random
 from datetime import datetime, timedelta
-import os
 
-# --- Your original exceptions_template and exception_descriptions go here unchanged ---
-output_dir = r"C:/Users/sai62.TRN/Downloads"
-json_path = os.path.join(output_dir, "enhanced_ecommerce_exception_logs.json")
-csv_path = os.path.join(output_dir, "enhanced_ecommerce_exception_logs.csv")
-
+# --- Exception Template ---
 exceptions_template = {
     'User Registration & Authentication': {
         'UserValidator': {
@@ -186,6 +180,7 @@ exceptions_template = {
     }
 }
 
+# --- Exception Descriptions ---
 exception_descriptions = {
     # User Registration & Authentication
     'UsernameExistsError': 'The provided username is already taken by another user.',
@@ -317,97 +312,37 @@ exception_descriptions = {
     'AnalyticsIntegrationError': 'Failed to integrate with analytics service.'
 }
 
-
-# --- Additional exceptions to merge into the existing template ---
-additional_exceptions = {
-    'User Registration & Authentication': {
-        'UserValidator': {
-            'registerUser': [
-                'CaptchaVerificationFailedError'
-            ],
-            'validateLogin': [
-                'TooManyLoginAttemptsError'
-            ]
-        },
-        'SearchService': {
-            'autoSuggest': [
-                'AutoSuggestFailureError'
-            ]
-        },
-        'CartService': {
-            'saveCart': [
-                'CartPersistenceError'
-            ]
-        },
-        'CheckoutService': {
-            'placeOrder': [
-                'OrderDuplicateSubmissionError'
-            ]
-        },
-        'NotificationService': {
-            'sendEmail': [
-                'EmailSpamDetectedError'
-            ]
-        },
-        'PaymentGateway': {
-            'verifyTransaction': [
-                'PaymentReversalError'
-            ]
-        }
-    }
-}
-
-# Function to merge additional exceptions into your original template
-def merge_exceptions(base, additions):
-    for app, services in additions.items():
-        if app not in base:
-            base[app] = {}
-        for service, methods in services.items():
-            if service not in base[app]:
-                base[app][service] = {}
-            for method, exc_list in methods.items():
-                if method in base[app][service]:
-                    base[app][service][method].extend(exc_list)
-                else:
-                    base[app][service][method] = exc_list
-
-# Merge the additional exceptions
-merge_exceptions(exceptions_template, additional_exceptions)
-
-# --- User list for the user column ---
-users = [f"user{str(i).zfill(3)}" for i in range(1, 201)]  # user001, user002, ...
-
-# --- Your original generate_logs function with only user field added ---
-def generate_logs(template, descriptions, num_entries=100):
+# --- Log Generator ---
+def generate_logs(num_records=5000):
     logs = []
-    for _ in range(num_entries):
-        module = random.choice(list(template.keys()))
-        service = random.choice(list(template[module].keys()))
-        method = random.choice(list(template[module][service].keys()))
-        exception = random.choice(template[module][service][method])
-        description = descriptions.get(exception, "No description available.")
-        log = {
-            "timestamp": (datetime.now() - timedelta(minutes=random.randint(0, 1440))).isoformat(),
-            "module": module,
-            "service": service,
-            "method": method,
-            "exception": exception,
-            "description": description
-        }
-        logs.append(log)
+    for _ in range(num_records):
+        app = random.choice(list(exceptions_template.keys()))
+        service = random.choice(list(exceptions_template[app].keys()))
+        method_or_exceptions = exceptions_template[app][service]
+
+        # Handle both dictionary (with methods) and direct exception lists
+        if isinstance(method_or_exceptions, dict):
+            method = random.choice(list(method_or_exceptions.keys()))  # Pick a random method
+            exception_list = method_or_exceptions[method]
+        else:
+            method = random.choice(method_or_exceptions)  # Directly select an exception as method
+            exception_list = [method]  # Only one exception since it's not method-specific
+
+        exc = random.choice(exception_list)
+        description = exception_descriptions.get(exc, 'No description available.')
+        fake_time = datetime.now() - timedelta(minutes=random.randint(0, 100000))
+        logs.append({
+            'application_component': app,
+            'service': service,
+            'method_name': method,
+            'exception': exc,
+            'description': description,
+            'date_time': fake_time.strftime('%Y-%m-%d %H:%M:%S')
+        })
     return logs
 
-# Generate logs
-logs = generate_logs(exceptions_template, exception_descriptions, 200)
+# --- Write to JSON ---
+with open('ecommerce_exception_logs.json', 'w') as f:
+    json.dump(generate_logs(), f, indent=4)
 
-# Save as JSON
-with open(json_path, "w", encoding="utf-8") as json_file:
-    json.dump(logs, json_file, indent=4)
-
-# Save as CSV
-with open(csv_path, "w", newline='', encoding="utf-8") as csv_file:
-    writer = csv.DictWriter(csv_file, fieldnames=logs[0].keys())
-    writer.writeheader()
-    writer.writerows(logs)
-
-print("Files written successfully.")
+print("✅ 5000 fake e-commerce exception records saved to 'ecommerce_exception_logs.json'.")
